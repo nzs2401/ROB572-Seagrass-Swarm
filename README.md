@@ -4,7 +4,7 @@
 ```bash
 
 # Clone the repository
-git clone https://github.com/YOUR-USERNAME/ROB572-Seagrass-Swarm.git
+git clone git@github.com:nzs2401/ROB572-Seagrass-Swarm.git
 
 # Enter the folder
 cd ROB572-Seagrass-Swarm
