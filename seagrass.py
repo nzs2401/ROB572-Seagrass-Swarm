@@ -35,5 +35,3 @@ def seagrass(lon, lat):
     print(result["cover"].values)
 
 return{result["cover"].values}
-
-
