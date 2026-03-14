@@ -1,18 +1,31 @@
 #Mapping of Viable Sites
 import numpy as np
-import v_seagras
+import v_seagrass
 import v_coral
+import v_depth
 import random
 import matplotlib.pyplot as plt
 
-latq = np.linspace(24,32,400)
-lonq = np.linspace(-86,-80,400)
+#  original
+# latq = np.linspace(24,32,400)
+# lonq = np.linspace(-86,-80,400)
+
+# trying now
+latq = np.linspace(24, 32, 600)
+lonq = np.linspace(-86, -80, 600)
+
+# try last
+# latq = np.linspace(24, 32, 1000)
+# lonq = np.linspace(-86, -80, 1000)
+
 LonGrid, LatGrid = np.meshgrid(lonq,latq)
 print('Grid Made!')
-seagrass_coverage = v_seagras.seagrass(LonGrid, LatGrid)
+seagrass_coverage = v_seagrass.seagrass(LonGrid, LatGrid)
 print('Seagrass Collected!  Now for Coral...')
-coral_presence, depth = coral(LonGrid, LatGrid)
+coral_presence = v_coral.coral(LonGrid, LatGrid)
 print('Depth & Coral Presence Collected')
+# add depth...
+depth = v_depth.depth(LonGrid, LatGrid)
 
 percover = np.zeros_like(depth)
 good_depth = (depth > 1) & (depth < 3)
@@ -38,7 +51,11 @@ plt.colorbar(label='Viability Score')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.title('Viability of Sites for Seagrass Restoration')
-plt.show()
+# plt.show()
+# Use when run in background
+plt.savefig('viability_map.png')
+plt.close()
+# Use when run in background
 #This shows 0 viability when coral function uses linear for z_grid_flat
 #This shows irregular viability when coral function uses nearest for z_grid_flat
 
@@ -59,4 +76,8 @@ plt.colorbar(label='True = NaN depth')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.title('Locations without depth data')
-plt.show()
+# plt.show()
+# Use when run in the background
+plt.savefig('nan_depth_map.png')
+plt.close()
+# Use when run in the background

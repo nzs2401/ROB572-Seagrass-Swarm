@@ -8,7 +8,17 @@ def seagrass(lon, lat): #lon and lat are 2D arrays
     from shapely.geometry import Point
 
     #Load the Seagrass data
-    gdf = gpd.read_file(r"C:\Users\gamcs\Downloads\Seagrass (1)\Seagrass.gpkg")
+    # Depends on what computer your are running on...
+    ### Comment this out if not running on specific computer ###
+    # gdf = gpd.read_file(r"C:\Users\gamcs\Downloads\Seagrass (1)\Seagrass.gpkg")
+    ### Comment this out if not running on specific computer ###
+
+    ### Comment this out if this doesn't work for you ###
+    from pathlib import Path
+    repo_root = Path(__file__).parent
+    gdf = gpd.read_file(repo_root / "Seagrass.gpkg")
+    ### Comment this out if this doesn't work for you ###
+
     gdf.head()
 
     #Define a subset of the Seagrass data
