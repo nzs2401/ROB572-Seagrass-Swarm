@@ -5,6 +5,10 @@ def coral(lon, lat):
     from scipy.spatial import cKDTree
     from pathlib import Path
 
+    ### Comment this out if not running on specific computer ###
+    # coral = pd.read_csv(r"C:\Users\gamcs\Downloads\deep_sea_corals_6186_86ea_f111.csv", low_memory=False)
+    ### Comment this out if not running on specific computer ###
+
     # Load Coral Data
     repo_root = Path(__file__).parent
     coral = pd.read_csv(repo_root / "deep_sea_corals_6186_86ea_f111.csv", low_memory=False)
