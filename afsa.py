@@ -456,91 +456,153 @@ class AFSA:
 #  VISUALISATION
 # ─────────────────────────────────────────────
 
-def plot_results(env: Environment, results: dict, save_path: Optional[str] = None):
+def plot_results(env: Environment, results: dict, save_path: Optional[str] = None,
+                 lon_grid: Optional[np.ndarray] = None,
+                 lat_grid: Optional[np.ndarray] = None):
     """Six-panel summary figure including coverage curve and confusion matrix."""
-    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    import cartopy.crs as ccrs
+    import cartopy.feature as cfeature
+
+    use_geo = lon_grid is not None and lat_grid is not None
+
+    fig = plt.figure(figsize=(18, 10))
     fig.suptitle("AFSA - Seagrass Restoration Survey", fontsize=14, fontweight='bold')
 
-    # Panel 1: Ground-truth planting likelihood
-    ax = axes[0, 0]
-    im = ax.imshow(env.likelihood_grid, origin='upper', cmap='YlGn', vmin=0, vmax=1)
-    plt.colorbar(im, ax=ax, label='Planting Likelihood')
-    ax.set_title('Ground Truth - Planting Likelihood')
-    ax.set_xlabel('Column'); ax.set_ylabel('Row')
+    proj = ccrs.PlateCarree() if use_geo else None
 
-    # Panel 2: Robot-observed map
-    ax = axes[0, 1]
+    def make_ax(pos):
+        if use_geo:
+            return fig.add_subplot(2, 3, pos, projection=proj)
+        else:
+            return fig.add_subplot(2, 3, pos)
+
+    def add_coast(ax):
+        if use_geo:
+            ax.set_extent([lon_grid.min(), lon_grid.max(),
+                           lat_grid.min(), lat_grid.max()],
+                          crs=ccrs.PlateCarree())
+            ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+            ax.add_feature(cfeature.LAND, facecolor='lightgray', zorder=0)
+            ax.add_feature(cfeature.STATES, linewidth=0.4)
+
+    # ── Panel 1: Ground-truth planting likelihood ─────────────────────────
+    ax1 = make_ax(1)
+    if use_geo:
+        im = ax1.pcolormesh(lon_grid, lat_grid, env.likelihood_grid,
+                            transform=ccrs.PlateCarree(), cmap='YlGn',
+                            vmin=0, vmax=1, zorder=1)
+        add_coast(ax1)
+        plt.colorbar(im, ax=ax1, label='Planting Likelihood')
+        ax1.set_title('Ground Truth - Planting Likelihood')
+    else:
+        im = ax1.imshow(env.likelihood_grid, origin='upper', cmap='YlGn', vmin=0, vmax=1)
+        plt.colorbar(im, ax=ax1, label='Planting Likelihood')
+        ax1.set_title('Ground Truth - Planting Likelihood')
+        ax1.set_xlabel('Column'); ax1.set_ylabel('Row')
+
+    # ── Panel 2: Robot-observed map ───────────────────────────────────────
+    ax2 = make_ax(2)
     display = np.where(results['observed_likelihood'] >= 0,
                        results['observed_likelihood'], np.nan)
-    im2 = ax.imshow(display, origin='upper', cmap='YlGn', vmin=0, vmax=1)
-    plt.colorbar(im2, ax=ax, label='Observed Likelihood')
-    ax.set_title(
+    if use_geo:
+        im2 = ax2.pcolormesh(lon_grid, lat_grid, display,
+                             transform=ccrs.PlateCarree(), cmap='YlGn',
+                             vmin=0, vmax=1, zorder=1)
+        add_coast(ax2)
+        plt.colorbar(im2, ax=ax2, label='Observed Likelihood')
+    else:
+        im2 = ax2.imshow(display, origin='upper', cmap='YlGn', vmin=0, vmax=1)
+        plt.colorbar(im2, ax=ax2, label='Observed Likelihood')
+        ax2.set_xlabel('Column'); ax2.set_ylabel('Row')
+    ax2.set_title(
         f"Robot-Built Map  ({results['coverage_percent']:.1f}% plantable found)\n"
         f"{results['n_plantable_found']} / {results['n_plantable_total']} cells  |  "
         f"RMSE: {results['rmse']:.4f}"
     )
-    ax.set_xlabel('Column'); ax.set_ylabel('Row')
 
-    # Panel 3: Fish trajectories
-    ax = axes[0, 2]
-    ax.imshow(env.likelihood_grid, origin='upper', cmap='Greys', alpha=0.4)
+    # ── Panel 3: Fish trajectories ────────────────────────────────────────
+    ax3 = make_ax(3)
     colors = plt.cm.tab10(np.linspace(0, 1, len(results['trajectories'])))
-    for idx, traj in enumerate(results['trajectories']):
-        if len(traj) > 1:
-            rows = [p[0] for p in traj]
-            cols = [p[1] for p in traj]
-            ax.plot(cols, rows, color=colors[idx], lw=1.2, label=f'Fish {idx+1}')
-            ax.scatter(cols[0],  rows[0],  color=colors[idx], marker='o', s=40, zorder=5)
-            ax.scatter(cols[-1], rows[-1], color=colors[idx], marker='*', s=80, zorder=5)
-    ax.set_title('Fish Trajectories  (o start  * end)')
-    ax.set_xlabel('Column'); ax.set_ylabel('Row')
-    ax.legend(fontsize=7, loc='upper right')
+    if use_geo:
+        # Plot likelihood as background
+        ax3.pcolormesh(lon_grid, lat_grid, env.likelihood_grid,
+                       transform=ccrs.PlateCarree(), cmap='Greys',
+                       alpha=0.4, zorder=1)
+        add_coast(ax3)
+        for idx, traj in enumerate(results['trajectories']):
+            if len(traj) > 1:
+                traj_lons = [lon_grid[int(p[0]), int(p[1])] for p in traj]
+                traj_lats = [lat_grid[int(p[0]), int(p[1])] for p in traj]
+                ax3.plot(traj_lons, traj_lats, color=colors[idx], lw=1.2,
+                         transform=ccrs.PlateCarree(), label=f'Fish {idx+1}', zorder=2)
+                ax3.scatter(traj_lons[0], traj_lats[0], color=colors[idx],
+                            marker='o', s=40, zorder=5, transform=ccrs.PlateCarree())
+                ax3.scatter(traj_lons[-1], traj_lats[-1], color=colors[idx],
+                            marker='*', s=80, zorder=5, transform=ccrs.PlateCarree())
+    else:
+        ax3.imshow(env.likelihood_grid, origin='upper', cmap='Greys', alpha=0.4)
+        for idx, traj in enumerate(results['trajectories']):
+            if len(traj) > 1:
+                rows = [p[0] for p in traj]
+                cols = [p[1] for p in traj]
+                ax3.plot(cols, rows, color=colors[idx], lw=1.2, label=f'Fish {idx+1}')
+                ax3.scatter(cols[0],  rows[0],  color=colors[idx], marker='o', s=40, zorder=5)
+                ax3.scatter(cols[-1], rows[-1], color=colors[idx], marker='*', s=80, zorder=5)
+        ax3.set_xlabel('Column'); ax3.set_ylabel('Row')
+    ax3.set_title('Fish Trajectories  (o start  * end)')
+    ax3.legend(fontsize=7, loc='upper right')
 
-    # Panel 4: Coverage % over time
-    ax = axes[1, 0]
+    # ── Panel 4: Coverage % over time ────────────────────────────────────
+    ax4 = fig.add_subplot(2, 3, 4)  # always regular axis
     iters = range(1, len(results['coverage_over_time']) + 1)
-    ax.plot(iters, results['coverage_over_time'], color='steelblue', lw=2)
-    ax.set_title('Coverage Efficiency Over Time')
-    ax.set_xlabel('Iteration')
-    ax.set_ylabel('Plantable Cells Found (%)')
-    ax.set_ylim(0, max(results['coverage_over_time']) * 1.15 + 0.5)
-    ax.grid(True, alpha=0.3)
-    ax.axhline(results['coverage_percent'], color='red', linestyle='--',
-               alpha=0.6, label=f"Final: {results['coverage_percent']:.1f}%")
-    ax.legend(fontsize=8)
+    ax4.plot(iters, results['coverage_over_time'], color='steelblue', lw=2)
+    ax4.set_title('Coverage Efficiency Over Time')
+    ax4.set_xlabel('Iteration')
+    ax4.set_ylabel('Plantable Cells Found (%)')
+    ax4.set_ylim(0, max(results['coverage_over_time']) * 1.15 + 0.5)
+    ax4.grid(True, alpha=0.3)
+    ax4.axhline(results['coverage_percent'], color='red', linestyle='--',
+                alpha=0.6, label=f"Final: {results['coverage_percent']:.1f}%")
+    ax4.legend(fontsize=8)
 
-    # Panel 5: Confusion matrix
-    ax = axes[1, 1]
+    # ── Panel 5: Confusion matrix ─────────────────────────────────────────
+    ax5 = fig.add_subplot(2, 3, 5)
     cm  = results['confusion_matrix']
-    im3 = ax.imshow(cm, cmap='Blues')
-    plt.colorbar(im3, ax=ax)
+    im3 = ax5.imshow(cm, cmap='Blues')
+    plt.colorbar(im3, ax=ax5)
     names_short = ['No Plant', 'Low', 'Medium', 'High']
-    ax.set_xticks(range(4)); ax.set_xticklabels(names_short, fontsize=8)
-    ax.set_yticks(range(4)); ax.set_yticklabels(names_short, fontsize=8)
-    ax.set_xlabel('Observed Class')
-    ax.set_ylabel('True Class')
-    ax.set_title(f'Confusion Matrix\n(RMSE = {results["rmse"]:.4f})')
+    ax5.set_xticks(range(4)); ax5.set_xticklabels(names_short, fontsize=8)
+    ax5.set_yticks(range(4)); ax5.set_yticklabels(names_short, fontsize=8)
+    ax5.set_xlabel('Observed Class')
+    ax5.set_ylabel('True Class')
+    ax5.set_title(f'Confusion Matrix\n(RMSE = {results["rmse"]:.4f})')
     for i in range(4):
         for j in range(4):
-            ax.text(j, i, str(cm[i, j]), ha='center', va='center',
-                    color='white' if cm[i, j] > cm.max() / 2 else 'black',
-                    fontsize=9)
+            ax5.text(j, i, str(cm[i, j]), ha='center', va='center',
+                     color='white' if cm[i, j] > cm.max() / 2 else 'black',
+                     fontsize=9)
 
-    # Panel 6: Seagrass coverage ground truth
-    ax = axes[1, 2]
+    # ── Panel 6: Seagrass coverage ground truth ───────────────────────────
+    ax6 = make_ax(6)
     cmap4  = plt.cm.colors.ListedColormap(['#cccccc', '#ffffb2', '#74c476', '#006d2c'])
     bounds = [-0.5, 0.5, 1.5, 2.5, 3.5]
     norm   = plt.cm.colors.BoundaryNorm(bounds, cmap4.N)
-    ax.imshow(env.coverage_grid, origin='upper', cmap=cmap4, norm=norm)
+    if use_geo:
+        ax6.pcolormesh(lon_grid, lat_grid, env.coverage_grid,
+                       transform=ccrs.PlateCarree(), cmap=cmap4,
+                       norm=norm, zorder=1)
+        add_coast(ax6)
+    else:
+        ax6.imshow(env.coverage_grid, origin='upper', cmap=cmap4, norm=norm)
+        ax6.set_xlabel('Column'); ax6.set_ylabel('Row')
     patches = [
         mpatches.Patch(color='#cccccc', label='None / No data'),
         mpatches.Patch(color='#ffffb2', label='Present'),
         mpatches.Patch(color='#74c476', label='Patchy'),
         mpatches.Patch(color='#006d2c', label='Continuous'),
     ]
-    ax.legend(handles=patches, fontsize=7, loc='upper right')
-    ax.set_title('Seagrass Coverage (ground truth)')
-    ax.set_xlabel('Column'); ax.set_ylabel('Row')
+    ax6.legend(handles=patches, fontsize=7, loc='upper right')
+    ax6.set_title('Seagrass Coverage (ground truth)')
 
     plt.tight_layout()
     if save_path:
@@ -554,30 +616,34 @@ def plot_results(env: Environment, results: dict, save_path: Optional[str] = Non
 # ─────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("Running AFSA demo with synthetic environment ...")
+    print("Running AFSA on real Florida coast environment ...")
+    LonGrid = np.load('lon_grid.npy')
+    LatGrid = np.load('lat_grid.npy')
 
-    ROWS, COLS = 200, 200
-    rng = np.random.default_rng(42)
+    # ── Load real environment from Mapping_of_Viable_Sites.py output ────
+    percover   = np.load('percover.npy')
+    depth_grid = np.load('depth_grid.npy')
+    ROWS, COLS = percover.shape
 
-    # ── Swap these lines to use your real data ───────────────────────────
-    # from coral import get_depth_grid
-    # from seagrass import get_coverage_grid
-    # depth_grid    = get_depth_grid()
-    # coverage_grid = get_coverage_grid()
-    # ────────────────────────────────────────────────────────────────────
-
-    # Synthetic depth: most of the grid is 1-3 m, edges are deeper
-    depth_grid = np.full((ROWS, COLS), 5.0)
-    depth_grid[30:170, 30:170] = rng.uniform(1.0, 3.0, (140, 140))
-
-    # Synthetic coverage: random patches
-    coverage_grid = rng.choice(
-        [COVERAGE_NONE, COVERAGE_PRESENT, COVERAGE_PATCHY, COVERAGE_CONTINUOUS],
-        size=(ROWS, COLS),
-        p=[0.4, 0.2, 0.2, 0.2]
-    )
+    # Convert percover scores to coverage codes for Algorithm 1
+    coverage_grid = np.zeros(percover.shape, dtype=int)
+    coverage_grid[percover == 0.0]  = COVERAGE_CONTINUOUS  # already has seagrass
+    coverage_grid[percover == 0.25] = COVERAGE_PRESENT      # 51-100% coverage
+    coverage_grid[percover == 0.5]  = COVERAGE_PATCHY       # patchy/discontinuous
+    coverage_grid[percover == 0.55] = COVERAGE_PRESENT      # 1-89% coverage
+    coverage_grid[percover >= 0.7]  = COVERAGE_NONE         # bare/unknown = plant here
 
     env = Environment(depth_grid, coverage_grid)
+
+    # Find the viable area center to start fish near planting sites
+    viable = np.where(env.likelihood_grid > 0)
+    if len(viable[0]) > 0:
+        start_row = float(np.mean(viable[0]))
+        start_col = float(np.mean(viable[1]))
+        print(f"Starting fish near viable area center: row={start_row:.0f}, col={start_col:.0f}")
+    else:
+        start_row = ROWS / 2
+        start_col = COLS / 2
 
     afsa = AFSA(
         env          = env,
@@ -587,8 +653,8 @@ if __name__ == "__main__":
         try_number   = 10,
         crowd_factor = 0.5,
         max_iter     = 100,
-        start_row    = ROWS / 2,
-        start_col    = COLS / 2,
+        start_row    = start_row,
+        start_col    = start_col,
         rng_seed     = 0,
     )
 
@@ -596,4 +662,5 @@ if __name__ == "__main__":
     results = afsa.run()
 
     print_metrics(env, results)
-    plot_results(env, results, save_path="afsa_results.png")
+    plot_results(env, results, save_path="afsa_results.png",
+             lon_grid=LonGrid, lat_grid=LatGrid)

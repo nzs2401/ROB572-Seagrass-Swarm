@@ -1,0 +1,240 @@
+<VRTDataset rasterXSize="223912" rasterYSize="185043">
+  <SRS dataAxisToSRSAxisMapping="2,1">GEOGCS["NAD83(2011)",DATUM["NAD83_National_Spatial_Reference_System_2011",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","1116"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","6318"]]</SRS>
+  <GeoTransform> -8.7605554063165386e+01,  3.5085651082316235e-05,  0.0000000000000000e+00,  3.0991756397548844e+01,  0.0000000000000000e+00, -3.5085651082316587e-05</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <NoDataValue>-999999</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR00_C05.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="11923" RasterYSize="21839" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="11923" ySize="21839" />
+      <DstRect xOff="164937.102822478" yOff="139724.754303413" xSize="3129.3493494357" ySize="5731.93495280735" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR01_C04.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="1699" RasterYSize="8160" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="1699" ySize="8160" />
+      <DstRect xOff="163685.153112102" yOff="133856.075996495" xSize="445.92506455478" ySize="2141.70013347253" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR01_C05.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="8122" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="8122" ySize="22359" />
+      <DstRect xOff="164131.340639909" yOff="133856.075996495" xSize="2131.7265299097" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR02_C03.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="16790" RasterYSize="9199" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="16790" ySize="9199" />
+      <DstRect xOff="153855.641874518" yOff="127987.397689578" xSize="4406.75799522141" ySize="2414.39945193797" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR02_C04.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="22359" RasterYSize="20347" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="22359" ySize="20347" />
+      <DstRect xOff="158262.662332991" yOff="128515.4737519" xSize="5868.41584366562" ySize="5340.33978134398" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR02_C05.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="2818" RasterYSize="9396" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="2818" ySize="9396" />
+      <DstRect xOff="164131.340639909" yOff="131389.70882073" xSize="739.621443152645" ySize="2466.10471251327" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR03_C02.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="2961" RasterYSize="8370" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="2961" ySize="8370" />
+      <DstRect xOff="151616.567874683" yOff="122118.71938266" xSize="777.153688139019" ySize="2196.81741631928" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR03_C03.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="9378" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="9378" ySize="22359" />
+      <DstRect xOff="152393.984026074" yOff="122118.71938266" xSize="2461.38037398366" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR04_C02.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="12458" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="12458" ySize="22359" />
+      <DstRect xOff="149123.954373753" yOff="116250.041075743" xSize="3269.76718906912" ySize="5868.41584366576" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR04_C03.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="2569" RasterYSize="9725" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="2569" ySize="9725" />
+      <DstRect xOff="152393.984026074" yOff="119566.001797102" xSize="674.268093491572" ySize="2552.45512230646" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR05_C01.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="2976" RasterYSize="6043" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="2976" ySize="6043" />
+      <DstRect xOff="145743.952618991" yOff="110381.362768825" xSize="781.090636913519" ySize="1586.06542972732" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR05_C02.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14210" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="14210" ySize="22359" />
+      <DstRect xOff="146525.305719156" yOff="110381.362768825" xSize="3729.60280596125" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR06_C01.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="17620" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="17620" ySize="22359" />
+      <DstRect xOff="141900.440761813" yOff="104512.684461908" xSize="4624.60249409179" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR06_C02.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="1437" RasterYSize="2697" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="1437" ySize="2697" />
+      <DstRect xOff="146525.305719156" yOff="109673.236915871" xSize="377.159692622366" ySize="707.863389702933" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR07_C00.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="10854" RasterYSize="15955" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="10854" ySize="15955" />
+      <DstRect xOff="137807.588815567" yOff="98644.0061549902" xSize="2848.77613342045" ySize="4187.60118009259" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR07_C01.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="11420" RasterYSize="12700" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="11420" ySize="12700" />
+      <DstRect xOff="140656.627412239" yOff="101179.138702688" xSize="2997.33033385485" ySize="3333.28329596829" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR08_C00.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="6872" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="6872" ySize="22359" />
+      <DstRect xOff="137502.8689804" yOff="92775.3278480728" xSize="1803.64746534604" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR09_C00.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="15099" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="15099" ySize="22359" />
+      <DstRect xOff="134846.478410439" yOff="86906.6495411553" xSize="3962.93263667967" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR10_C00.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="7222" RasterYSize="22359" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="7222" ySize="22359" />
+      <DstRect xOff="135065.635225568" yOff="81037.9712342377" xSize="1895.50960342391" ySize="5868.41584366586" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825tR11_C00.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="5994" RasterYSize="11751" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="5994" ySize="11751" />
+      <DstRect xOff="134937.290695511" yOff="77953.5031008346" xSize="1573.2047303962" ySize="3084.20567015147" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR0_C2.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="14699" RasterYSize="22360" DataType="Float32" BlockXSize="14699" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="14699" ySize="22360" />
+      <DstRect xOff="138233.02311225" yOff="126035.381643405" xSize="38790.2281421808" ySize="59007.3815401833" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR0_C3.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="17766" RasterYSize="22360" DataType="Float32" BlockXSize="17766" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="17766" ySize="22360" />
+      <DstRect xOff="177026.925107711" yOff="126035.394649237" xSize="46883.950824817" ySize="59007.3815401833" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR1_C2.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="8220" RasterYSize="22360" DataType="Float32" BlockXSize="8220" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="8220" ySize="22360" />
+      <DstRect xOff="123982.337054334" yOff="67026.3884402779" xSize="21692.3379365077" ySize="59007.3815401833" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR1_C3.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="8166" RasterYSize="22360" DataType="Float32" BlockXSize="8166" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="8166" ySize="22360" />
+      <DstRect xOff="202361.943585679" yOff="67026.4165172989" xSize="21549.8335267058" ySize="59007.3815401833" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR2_C0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="22360" RasterYSize="8220" DataType="Float32" BlockXSize="22360" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="22360" ySize="8220" />
+      <DstRect xOff="0" yOff="20983.0159785812" xSize="59007.3815401839" ySize="21692.3379365075" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR2_C1.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="22360" RasterYSize="13620" DataType="Float32" BlockXSize="22360" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="22360" ySize="13620" />
+      <DstRect xOff="59009.0653939676" yOff="28108.3301634608" xSize="59007.3815401839" ySize="35942.7789166948" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR2_C2.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="7780" RasterYSize="6646" DataType="Float32" BlockXSize="7780" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="7780" ySize="6646" />
+      <DstRect xOff="118018.111784438" yOff="49484.6672699953" xSize="20531.1908936776" ySize="17538.598287838" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR2_C3.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="10920" RasterYSize="22360" DataType="Float32" BlockXSize="10920" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="10920" ySize="22360" />
+      <DstRect xOff="180985.702842587" yOff="8017.38825783369" xSize="28817.5584266014" ySize="59007.3815401833" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">reprojected_thirdarcsec_DEM_J1342746tR3_C3.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="2820" RasterYSize="3037" DataType="Float32" BlockXSize="2820" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="2820" ySize="3037" />
+      <DstRect xOff="180985.664690767" yOff="0" xSize="7441.89695632015" ySize="8014.55356607946" />
+      <NODATA>-999999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

@@ -6,17 +6,12 @@ import v_depth
 import random
 import matplotlib.pyplot as plt
 
-#  original
-# latq = np.linspace(24,32,400)
-# lonq = np.linspace(-86,-80,400)
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 # trying now
 latq = np.linspace(24, 32, 600)
 lonq = np.linspace(-86, -80, 600)
-
-# try last
-# latq = np.linspace(24, 32, 1000)
-# lonq = np.linspace(-86, -80, 1000)
 
 LonGrid, LatGrid = np.meshgrid(lonq,latq)
 print('Grid Made!')
@@ -29,44 +24,50 @@ depth = v_depth.depth(LonGrid, LatGrid)
 
 percover = np.zeros_like(depth)
 good_depth = (depth > 1) & (depth < 3)
-percover[good_depth & (seagrass_coverage == "Nan")] = 1 #0
-percover[good_depth & (seagrass_coverage == "51 - 100%  ")] = 0.25 #0.75
-percover[good_depth & (seagrass_coverage == "90 - 100% ")] = 0.5 #0.95
-percover[good_depth & (seagrass_coverage == "1 - 89% ")] = 0.55 #0.45
-percover[good_depth & (seagrass_coverage == "10 - 50% ")] = 0.7 #0.30
-percover[good_depth & (seagrass_coverage == "Continuous ")] = 0 #1
-percover[good_depth & (seagrass_coverage == "Discontinuous ")] = 0.5 #0.5
-percover[good_depth & (seagrass_coverage == "<50% ")] = 0.75 #0.25
-percover[good_depth & (seagrass_coverage == "Unknown ")] = np.random.rand(np.sum(good_depth & (seagrass_coverage == "Unknown " )))
-percover[good_depth & (seagrass_coverage == ">50% ")] = 0.25 #.75
-percover[good_depth & (seagrass_coverage == "Continuous Seagrass ")] = 0 #1
-percover[good_depth & (seagrass_coverage == "Patchy (Discontinuous) Seagrass ")] = 0.5 #0.5
+
+
+# DEBUG - add these lines
+print('Cells with good depth:', np.sum(good_depth))
+print('Unique seagrass values at good depth cells:')
+print(np.unique(seagrass_coverage[good_depth]))
+
+percover[good_depth & (seagrass_coverage == "Nan")] = 1
+percover[good_depth & (seagrass_coverage == "51 - 100%")] = 0.25
+percover[good_depth & (seagrass_coverage == "90 - 100%")] = 0.5
+percover[good_depth & (seagrass_coverage == "1 - 89%")] = 0.55
+percover[good_depth & (seagrass_coverage == "10 - 50%")] = 0.7
+percover[good_depth & (seagrass_coverage == "Continuous")] = 0
+percover[good_depth & (seagrass_coverage == "Discontinuous")] = 0.5
+percover[good_depth & (seagrass_coverage == "<50%")] = 0.75
+percover[good_depth & (seagrass_coverage == "Unknown")] = 0.5
+percover[good_depth & (seagrass_coverage == "")] = 0.5
+percover[good_depth & (seagrass_coverage == ">50%")] = 0.25
+percover[good_depth & (seagrass_coverage == "Continuous Seagrass")] = 0
+percover[good_depth & (seagrass_coverage == "Patchy (Discontinuous) Seagrass")] = 0.5
 percover[depth > 3] = 0 #Too Deep
-percover[depth <= 1] = 0 #Too Shallow   
+percover[depth <= 1] = 0 #Too Shallow  
 
-#Plotting!
-plt.figure(figsize=(10,7))
-plt.pcolormesh(LonGrid, LatGrid, percover, shading='auto')
-plt.colorbar(label='Viability Score')
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
+# Plot coastline
+fig = plt.figure(figsize=(10,7))
+ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+ax.set_extent([-86, -80, 24, 32], crs=ccrs.PlateCarree())
+mesh = ax.pcolormesh(LonGrid, LatGrid, percover, shading='auto', 
+                     transform=ccrs.PlateCarree(), cmap='viridis')
+ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+ax.add_feature(cfeature.STATES, linewidth=0.5)
+ax.add_feature(cfeature.LAND, facecolor='lightgray')
+plt.colorbar(mesh, ax=ax, label='Viability Score')
 plt.title('Viability of Sites for Seagrass Restoration')
-# plt.show()
-# Use when run in background
-plt.savefig('viability_map.png')
+# # Use when run in background
+plt.savefig('viability_map.png', dpi=150, bbox_inches='tight')
 plt.close()
-# Use when run in background
-#This shows 0 viability when coral function uses linear for z_grid_flat
-#This shows irregular viability when coral function uses nearest for z_grid_flat
-
+# # Use when run in background
 
 #For error checking...
-print(np.min(percover), np.max(percover)) #Shows max and min viability score
-print(np.min(depth), np.max(depth)) #Shows max and min depth
+print(np.nanmin(percover), np.nanmax(percover)) #Shows max and min viability score
+print(np.nanmin(depth), np.nanmax(depth)) #Shows max and min depth
 #This second line shows NAN when coral function uses linear for z_grid_flat
 #This second line shows 0 and 3000 when coral function uses nearest for z_grid_flat
-
-
 
 #Looking at depth scores to see where we have NaN values 
 import matplotlib.pyplot as plt
@@ -76,8 +77,17 @@ plt.colorbar(label='True = NaN depth')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.title('Locations without depth data')
-# plt.show()
+plt.show()
+
 # Use when run in the background
 plt.savefig('nan_depth_map.png')
 plt.close()
 # Use when run in the background
+
+# Save grids for AFSA, WOA, and MPA integrations
+print("Saving Grids...")
+np.save('percover.npy', percover)
+np.save('depth_grid.npy', depth)
+np.save('lon_grid.npy', LonGrid)
+np.save('lat_grid.npy', LatGrid)
+print("Grids saved!")

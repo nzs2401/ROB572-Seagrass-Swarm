@@ -1,79 +1,66 @@
+import numpy as np
+import rasterio
+from rasterio.merge import merge
+from rasterio.transform import rowcol
+from pathlib import Path
+import glob
+import subprocess
+import os
+
 def depth(lon, lat):
-    """
-    Loads and merges CUDEM bathymetric GeoTIFF tiles and interpolates
-    depth values onto the provided lon/lat grid.
-
-    CUDEM convention: negative values = below sea level (water depth)
-    We flip the sign so that depth is a positive number in metres.
-
-    Parameters:
-        lon : 2D numpy array of longitudes
-        lat : 2D numpy array of latitudes
-
-    Returns:
-        depth_grid : 2D numpy array of water depth in metres (positive = deeper)
-                     NaN where data is missing or on land
-    """
-    import numpy as np
-    import rasterio
-    from rasterio.merge import merge
-    from rasterio.transform import rowcol
-    from pathlib import Path
-    import glob
-
     repo_root = Path(__file__).parent
-
-    # Find all CUDEM tif tiles in the repo folder
-    tif_files = sorted(glob.glob(str(repo_root / "thirdarcsec_DEM_J1342746*.tif")))
+    tif_files = sorted(glob.glob(str(repo_root / "tif_files" / "more_data*.tif"))) + \
+            sorted(glob.glob(str(repo_root / "tif_files" / "reprojected_*.tif")))
 
     if len(tif_files) == 0:
-        raise FileNotFoundError(
-            "No CUDEM .tif files found in repo folder. "
-            "Make sure all thirdarcsec_DEM_J1342746*.tif files are present."
-        )
+        raise FileNotFoundError("No .tif files found in tif_files folder.")
 
-    print(f"  Found {len(tif_files)} bathymetric tiles, merging...")
+    print(f"  Found {len(tif_files)} bathymetric tiles, building VRT...")
 
-    # Open and merge all tiles into one seamless raster
-    src_files = [rasterio.open(f) for f in tif_files]
-    merged, merged_transform = merge(src_files)
+    # Build a VRT (virtual mosaic) instead of loading all tiles into memory
+    vrt_path = str(repo_root / "tif_files" / "merged.vrt")
+    subprocess.run(["gdalbuildvrt", vrt_path] + tif_files, 
+                   check=True, capture_output=True)
 
-    # merged shape is (1, rows, cols) — squeeze to 2D
-    merged_data = merged[0].astype(float)
-
-    # Get nodata value and mask it
-    nodata = src_files[0].nodata
-    if nodata is not None:
-        merged_data[merged_data == nodata] = np.nan
-
-    # Close all open files
-    for src in src_files:
-        src.close()
-
-    # Get the CRS info from the merged transform
-    # Map each lon/lat query point to a pixel in the merged raster
     lon_flat = lon.flatten()
     lat_flat = lat.flatten()
 
-    # Convert lon/lat to pixel row/col indices
-    rows, cols = rowcol(merged_transform, lon_flat, lat_flat)
+    with rasterio.open(vrt_path) as src:
+        rows, cols = rowcol(src.transform, lon_flat, lat_flat)
+        n_rows, n_cols = src.height, src.width
+        rows = np.clip(rows, 0, n_rows - 1)
+        cols = np.clip(cols, 0, n_cols - 1)
+        
+        # Sample in chunks instead of loading entire raster
+        depth_flat = np.full(len(lon_flat), np.nan)
+        chunk_size = 10000
+        for i in range(0, len(lon_flat), chunk_size):
+            chunk_rows = rows[i:i+chunk_size]
+            chunk_cols = cols[i:i+chunk_size]
+            # Use rasterio sample method - reads only needed pixels
+            coords = [(lon_flat[j], lat_flat[j]) 
+                    for j in range(i, min(i+chunk_size, len(lon_flat)))]
+            samples = list(src.sample(coords))
+            for j, sample in enumerate(samples):
+                depth_flat[i+j] = sample[0]
+        
+        nodata = src.nodata
+        if nodata is not None:
+            depth_flat[depth_flat == nodata] = np.nan
 
-    # Clamp indices to valid range
-    n_rows, n_cols = merged_data.shape
-    rows = np.clip(rows, 0, n_rows - 1)
-    cols = np.clip(cols, 0, n_cols - 1)
-
-    # Sample depth at each grid point
-    depth_flat = merged_data[rows, cols]
-
-    # CUDEM: negative = below sea level, positive = above (land)
-    # Flip sign so water depth is positive, set land (positive elevation) to NaN
     depth_flat = -depth_flat
-    depth_flat[depth_flat < 0] = np.nan  # was above sea level (land)
+    depth_flat[depth_flat < 0] = np.nan
 
     depth_grid = depth_flat.reshape(lon.shape)
 
     print(f"  Depth range: {np.nanmin(depth_grid):.1f}m to {np.nanmax(depth_grid):.1f}m")
     print(f"  Cells in 1-3m seagrass zone: {np.sum((depth_grid > 1) & (depth_grid < 3))}")
+
+    from scipy.ndimage import distance_transform_edt
+    nan_mask = np.isnan(depth_grid)
+    if nan_mask.any():
+        distance, indices = distance_transform_edt(nan_mask, return_indices=True)
+        fill_mask = nan_mask & (distance <= 20)
+        depth_grid[fill_mask] = depth_grid[tuple(indices[:, fill_mask])]
 
     return depth_grid
