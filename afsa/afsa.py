@@ -29,7 +29,7 @@ class Fish:
 
 
 class AFSA:
-    def __init__(self, env, n_fish=5, visual=20.0, step=10.0,
+    def __init__(self, env, n_fish=10, visual=20.0, step=10.0,
                  try_number=10, crowd_factor=0.5, max_iter=100,
                  start_row=None, start_col=None, rng_seed=None):
         self.env          = env
@@ -183,9 +183,10 @@ if __name__ == "__main__":
     start_row = float(np.mean(viable[0])) if len(viable[0]) > 0 else env.rows / 2
     start_col = float(np.mean(viable[1])) if len(viable[0]) > 0 else env.cols / 2
 
-    afsa = AFSA(env, n_fish=5, visual=25.0, step=12.0,
-                try_number=10, crowd_factor=0.5, max_iter=100,
-                start_row=start_row, start_col=start_col, rng_seed=0)
+    # change parameters here to see convergence...
+    afsa = AFSA(env, n_fish=20, visual=75.0, step=40.0,
+            try_number=4, crowd_factor=0.3, max_iter=200,
+            start_row=start_row, start_col=start_col, rng_seed=0)
 
     print("Running AFSA...")
     results = afsa.run()

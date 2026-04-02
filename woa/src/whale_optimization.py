@@ -85,6 +85,8 @@ class WhaleOptimization():
             f = self._opt_func(x, y, self._LonGrid, self._LatGrid, self._seagrass_coverage, self._depth)
             fitness.append(f)
         fitness = np.array(fitness)
+        print(f"  fitness min: {fitness.min():.3f}, max: {fitness.max():.3f}, mean: {fitness.mean():.3f}")
+
         
         sol_fitness = [(f, s) for f, s in zip(fitness, self._sols)]
    

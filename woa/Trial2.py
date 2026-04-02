@@ -20,6 +20,17 @@ LatGrid    = np.load(os.path.join(root, 'lat_grid.npy'))
 percover   = np.load(os.path.join(root, 'percover.npy'))
 depth_grid = np.load(os.path.join(root, 'depth_grid.npy'))
 
+# Debug - check viable sites
+print(f"Total grid cells: {percover.size}")
+print(f"Non-zero percover cells: {np.sum(percover > 0)}")
+print(f"Cells with pc >= 0.5: {np.sum(percover >= 0.5)}")
+print(f"Cells with pc >= 0.7: {np.sum(percover >= 0.7)}")
+viable = np.where(percover >= 0.5)
+if len(viable[0]) > 0:
+    print(f"Viable lat range: {LatGrid[viable].min():.2f} to {LatGrid[viable].max():.2f}")
+    print(f"Viable lon range: {LonGrid[viable].min():.2f} to {LonGrid[viable].max():.2f}")
+
+
 coverage_grid = np.zeros(percover.shape, dtype=int)
 coverage_grid[percover == 0.0]  = COVERAGE_CONTINUOUS
 coverage_grid[percover == 0.25] = COVERAGE_PRESENT
@@ -35,21 +46,34 @@ def planting(X, Y, LonGrid, LatGrid, seagrass_coverage, depth):
     x = np.argmin(np.abs(LonGrid[0,:] - X))
     sc = seagrass_coverage[y, x]
     d  = depth[y, x]
+    pc = percover[y, x]
+    # print(f"  pc={pc:.4f}, d={d:.2f}")
     good_depth = (d > 1) and (d < 3)
-    if good_depth and (sc == "51 - 100%"):    return 0.25
-    if good_depth and (sc == "90 - 100%"):    return 0.5
-    if good_depth and (sc == "1 - 89%"):      return 0.55
-    if good_depth and (sc == "10 - 50%"):     return 0.7
-    if good_depth and (sc == "Continuous"):   return 0
-    if good_depth and (sc == "Discontinuous"): return 0.5
-    if good_depth and (sc == "<50%"):         return 0.75
-    if good_depth and (sc == "Unknown"):      return 0.5
-    if good_depth and (sc == ">50%"):         return 0.25
-    if good_depth and (sc == "Continuous Seagrass"): return 0
-    if good_depth and (sc == "Patchy (Discontinuous) Seagrass"): return 0.5
-    if d > 3:  return 0
-    if d <= 1: return 0
-    else:      return 0.5
+    if not good_depth:
+        return 0.0
+    
+    # percover values match Mapping_of_Viable_Sites.py scoring
+    if pc == 0.0:   return 0.0   # Continuous seagrass - don't plant
+    if pc == 0.25:  return 0.25  # 51-100% coverage
+    if pc == 0.5:   return 0.5   # Patchy/discontinuous
+    if pc == 0.55:  return 0.55  # 1-89% coverage
+    if pc >= 0.7:   return pc    # bare/unknown - best planting sites
+    return 0.0
+    # if good_depth and (sc == "51 - 100%"):    return 0.25
+    # if good_depth and (sc == "90 - 100%"):    return 0.5
+    # if good_depth and (sc == "1 - 89%"):      return 0.55
+    # if good_depth and (sc == "10 - 50%"):     return 0.7
+    # if good_depth and (sc == "Continuous"):   return 0
+    # if good_depth and (sc == "Discontinuous"): return 0.5
+    # if good_depth and (sc == "<50%"):         return 0.75
+    # if good_depth and (sc == "Unknown"):      return 0.5
+    # if good_depth and (sc == ">50%"):         return 0.25
+    # if good_depth and (sc == "Continuous Seagrass"): return 0
+    # if good_depth and (sc == "Patchy (Discontinuous) Seagrass"): return 0.5
+    # if d > 3:  return 0
+    # if d <= 1: return 0
+    # else:      return 0.5
+
 
 # ── Convert WOA results to shared results dict ────────────────────────────
 def build_results(env, all_solutions, LonGrid, LatGrid, elapsed):
@@ -99,11 +123,11 @@ def build_results(env, all_solutions, LonGrid, LatGrid, elapsed):
 # ── Main ──────────────────────────────────────────────────────────────────
 def parse_cl_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-nsols", type=int, default=100)
-    parser.add_argument("-ngens", type=int, default=30)
-    parser.add_argument("-a",     type=float, default=2.0)
+    parser.add_argument("-nsols", type=int, default=200)
+    parser.add_argument("-ngens", type=int, default=100)
+    parser.add_argument("-a",     type=float, default=3.0)
     parser.add_argument("-b",     type=float, default=0.5)
-    parser.add_argument("-max",   default=False, dest='max', action='store_true')
+    parser.add_argument("-max",   default=True, dest='max', action='store_true')
     return parser.parse_args()
 
 def main():
@@ -113,7 +137,8 @@ def main():
     b          = args.b
     a          = args.a
     a_step     = a / ngens
-    constraints = [[-86, -80], [24, 32]]
+    # constraints = [[-86, -80], [24, 32]]
+    constraints = [[-84.21, -80.23], [24.52, 29.92]]
 
     print("Initializing WOA...")
     start_time = time.time()
@@ -129,6 +154,7 @@ def main():
     elapsed = time.time() - start_time
 
     # Build all_solutions same as Trial2.py
+    all_positions = []
     all_solutions = []
     for gen_positions in opt_alg.agent_paths:
         generation_data = []
@@ -136,7 +162,18 @@ def main():
             x, y = agent_pos
             fitness = planting(x, y, LonGrid, LatGrid, percover, depth_grid)
             generation_data.append((fitness, (x, y)))
+            # Add to all_positions for debug
+            row = int(np.argmin(np.abs(LatGrid[:,0] - y)))
+            col = int(np.argmin(np.abs(LonGrid[0,:] - x)))
+            all_positions.append((row, col))
         all_solutions.append(generation_data)
+
+    unique_positions = set(all_positions)
+    print(f"Total positions visited: {len(all_positions)}")
+    print(f"Unique grid cells visited: {len(unique_positions)}")
+    print(f"agent_paths length: {len(opt_alg.agent_paths)}")
+    print(f"first gen length: {len(opt_alg.agent_paths[0]) if opt_alg.agent_paths else 'empty'}")
+    print(f"first agent pos: {opt_alg.agent_paths[0][0] if opt_alg.agent_paths else 'empty'}")
 
     results = build_results(env, all_solutions, LonGrid, LatGrid, elapsed)
     print_metrics(env, results)
