@@ -65,8 +65,7 @@ class AFSA:
         start_time  = time.time()
 
         for iteration in range(self.max_iter):
-            for fish in self.fish:
-                self._step(fish)
+            self._step_all()
             n_found = int(np.sum((self.obs_likelihood > 0) & (self.env.likelihood_grid > 0)))
             pct = n_found / n_plantable * 100
             self.coverage_over_time.append(pct)
@@ -97,51 +96,64 @@ class AFSA:
             fish_final_pos      = [(f.row, f.col) for f in self.fish],
         )
 
-    def _step(self, fish):
-        env     = self.env
-        cur_pos = fish.pos()
-        cur_val = env.sense_likelihood(int(cur_pos[0]), int(cur_pos[1]))
-        neighbours = self._get_neighbours(fish)
+    def _step_all(self):
+        env = self.env
+        n = self.n_fish
+        lg = env.likelihood_grid  # direct array reference, no function call overhead
 
-        best_prey_val = cur_val
-        best_prey_pos = None
-        for _ in range(self.try_number):
-            angle  = self.rng.uniform(0, 2 * np.pi)
-            radius = self.rng.uniform(0, self.visual)
-            rp = np.clip([cur_pos[0] + radius * np.sin(angle),
-                          cur_pos[1] + radius * np.cos(angle)],
-                         [0, 0], [env.rows-1, env.cols-1])
-            val = env.sense_likelihood(int(rp[0]), int(rp[1]))
-            if val > best_prey_val:
-                best_prey_val = val
-                best_prey_pos = rp
+        cur_rows = np.array([int(np.clip(f.row, 0, env.rows-1)) for f in self.fish])
+        cur_cols = np.array([int(np.clip(f.col, 0, env.cols-1)) for f in self.fish])
+        cur_vals = lg[cur_rows, cur_cols]  # vectorized lookup
 
-        if best_prey_pos is not None:
-            target_pos = best_prey_pos
-        elif neighbours:
-            centre    = np.mean([n.pos() for n in neighbours], axis=0)
-            n_count   = len(neighbours)
-            swarm_val = env.sense_likelihood(int(centre[0]), int(centre[1]))
-            if n_count < self.n_fish * self.crowd_factor and swarm_val > cur_val:
-                target_pos = centre
+        # Generate all random prey positions at once
+        angles  = self.rng.uniform(0, 2*np.pi, (n, self.try_number))
+        radii   = self.rng.uniform(0, self.visual, (n, self.try_number))
+
+        prey_rows = np.clip(
+            cur_rows[:,None] + radii * np.sin(angles), 0, env.rows-1
+        ).astype(int)
+        prey_cols = np.clip(
+            cur_cols[:,None] + radii * np.cos(angles), 0, env.cols-1
+        ).astype(int)
+
+        # Vectorized lookup - no loops at all
+        prey_vals = lg[prey_rows, prey_cols]  # shape: (n_fish, try_number)
+
+        best_prey_idx = np.argmax(prey_vals, axis=1)
+        best_prey_vals = prey_vals[np.arange(n), best_prey_idx]
+
+        for i, fish in enumerate(self.fish):
+            cur_pos = fish.pos()
+
+            if best_prey_vals[i] > cur_vals[i]:
+                target = np.array([prey_rows[i, best_prey_idx[i]],
+                                    prey_cols[i, best_prey_idx[i]]], dtype=float)
             else:
-                best_n = max(neighbours,
-                             key=lambda n: env.sense_likelihood(int(n.row), int(n.col)))
-                best_n_val = env.sense_likelihood(int(best_n.row), int(best_n.col))
-                best_n_count = sum(1 for n in neighbours
-                                   if env.sense_likelihood(int(n.row), int(n.col)) >= best_n_val)
-                if best_n_val > cur_val and best_n_count < self.n_fish * self.crowd_factor:
-                    target_pos = best_n.pos()
+                neighbours = self._get_neighbours(fish)
+                if neighbours:
+                    centre    = np.mean([nb.pos() for nb in neighbours], axis=0)
+                    n_count   = len(neighbours)
+                    swarm_val = lg[int(centre[0]), int(centre[1])]
+                    if n_count < self.n_fish * self.crowd_factor and swarm_val > cur_vals[i]:
+                        target = centre
+                    else:
+                        best_n = max(neighbours,
+                                    key=lambda nb: lg[int(nb.row), int(nb.col)])
+                        best_n_val = lg[int(best_n.row), int(best_n.col)]
+                        best_n_count = sum(1 for nb in neighbours
+                                        if lg[int(nb.row), int(nb.col)] >= best_n_val)
+                        if best_n_val > cur_vals[i] and best_n_count < self.n_fish * self.crowd_factor:
+                            target = best_n.pos()
+                        else:
+                            angle  = self.rng.uniform(0, 2*np.pi)
+                            target = cur_pos + self.step * np.array([np.sin(angle), np.cos(angle)])
                 else:
-                    angle      = self.rng.uniform(0, 2 * np.pi)
-                    target_pos = cur_pos + self.step * np.array([np.sin(angle), np.cos(angle)])
-        else:
-            angle      = self.rng.uniform(0, 2 * np.pi)
-            target_pos = cur_pos + self.step * np.array([np.sin(angle), np.cos(angle)])
+                    angle  = self.rng.uniform(0, 2*np.pi)
+                    target = cur_pos + self.step * np.array([np.sin(angle), np.cos(angle)])
 
-        new_pos = self._move_toward(cur_pos, target_pos)
-        fish.move_to(new_pos[0], new_pos[1], env)
-        self._sense_and_record(fish)
+            new_pos = self._move_toward(cur_pos, target)
+            fish.move_to(new_pos[0], new_pos[1], env)
+            self._sense_and_record(fish)
 
     def _move_toward(self, cur, target):
         direction = target - cur
@@ -184,7 +196,7 @@ if __name__ == "__main__":
     start_col = float(np.mean(viable[1])) if len(viable[0]) > 0 else env.cols / 2
 
     # change parameters here to see convergence...
-    afsa = AFSA(env, n_fish=20, visual=75.0, step=40.0,
+    afsa = AFSA(env, n_fish=1000, visual=75.0, step=40.0,
             try_number=4, crowd_factor=0.3, max_iter=200,
             start_row=start_row, start_col=start_col, rng_seed=0)
 
