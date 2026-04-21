@@ -92,11 +92,12 @@ Get-ChildItem "ninearcres_ncei_nintharcsec_dem_J1343192*.tif" | ForEach-Object {
 
 ```
 #### Code
-Run Mapping_of_Viable_Sites.py to build environment files needed to run the rest of the code:
+The next step is to run Mapping_of_Viable_Sites.py (which is located in the main folder) this builds the environment files which are needed to run the rest of the code:
+
 ``` bash
 conda activate rob572_env
 python Mapping_of_Viable_Sites.py
 ```
-*** This produces the numpy files needed to run the rest of the files and a viability_map.png (which is included in this github). If your viability_map.png doesn't show all the planting sites visible in github file some of the tif_files were not added correctly (most often this occurs with the tif_files in "more_data_on_seagrass_growth_..."). In order to fix this you might have to manually select and drag the tif files from more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825 into the tif_files! It is important to note that you can still run the rest of this code without this data but it will decrease the number of possible planting sites.
+More specifically: this produces the numpy files needed to run the rest of the algorithms and a viability_map.png (which is included in this github). If your viability_map.png doesn't show all the planting sites visible in our github file some of the tif_files were not added correctly (most often this occurs with the tif_files in "more_data_on_seagrass_growth_..."). In order to fix this you might have to manually select and drag the tif files from more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825 into the tif_files. It is important to note that you can still run the rest of this code without this data but it will decrease the number of possible planting sites.
 
 Following this you should be able to navigate into the afsa (Artificial Fish Swarm Algorithm), mpa (Marine Predator Algorithm), and woa (Whale Optimization Algorithm) folders and run the python files contained within. Each file simulates the mission with agents exploring the environment using the titular algorithm with the goal of identifying and mapping seagrass coverage. At the end of each run these files create a png file with the results of the simulated mission.
