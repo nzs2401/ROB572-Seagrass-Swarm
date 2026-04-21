@@ -42,13 +42,21 @@ git push
 ```
 #### Collect Data that's too large for github
 There are four files/folders that were too large to be put in github that are needed for this simulation. Below are links to the relevant data (they should be accessible to anyone at University of Michigan)
+
 Seagrass (1).zip
+
 https://drive.google.com/file/d/1GRa9SPnZ6kV8lzeaap5Qp1-DkcCPXhui/view?usp=sharing
+
 thirdarcsec_DEM_J1342746.zip
+
 https://drive.google.com/file/d/1aTzdPDOaz1STeH7RIT_daWG83DVHfdcS/view?usp=sharing
+
 more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825.zip
+
 https://drive.google.com/file/d/1w7oY9kzRPG9kuJ9MhR1kfSXRYlVt2tou/view?usp=sharing
+
 ninearcres_ncei_nintharcsec_dem_J1343192.zip
+
 https://drive.google.com/file/d/1QqajA6yp7ny6u4e2nJs9Q8qC0MouCs1O/view?usp=sharing
 
 These files should all be downloaded and unzipped to the following locations:
