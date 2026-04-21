@@ -6,7 +6,7 @@ Before beginning make sure your environment has the following packages installed
 ```bash
 conda create -n rob572_env python=3.10
 conda activate rob572_env
-conda install -c conda-forge geopandas rasterio matplotlib scikit-learn cartopy
+conda install -c conda-forge geopandas rasterio matplotlib scikit-learn cartopy gdal
 
 ```
 #### Collect Code
@@ -80,9 +80,7 @@ cd ..
 #### Code
 Run Mapping_of_Viable_Sites.py to build environment files needed to run the rest of the code:
 ``` bash
-conda create -n rob572_env python=3.10
 conda activate rob572_env
-conda install -c conda-forge geopandas rasterio matplotlib scikit-learn cartopy gdal
 python Mapping_of_Viable_Sites.py
 ```
 Following this you should be able to navigate into the afsa (Artificial Fish Swarm Algorithm), mpa (Marine Predator Algorithm), and woa (Whale Optimization Algorithm) folders and run the python files contained within. Each file simulates the mission with agents exploring the environment using the titular algorithm with the goal of identifying and mapping seagrass coverage. At the end of each run these files create a png file with the results of the simulated mission.
