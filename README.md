@@ -59,10 +59,9 @@ ninearcres_ncei_nintharcsec_dem_J1343192.zip
 
 https://drive.google.com/file/d/1QqajA6yp7ny6u4e2nJs9Q8qC0MouCs1O/view?usp=sharing
 
-These files should all be downloaded and unzipped to the following locations:
-- seagrass.gpkg should go in the main folder (ROB572-Seagrass-Swarm-main)
-- All other files should go into tif_files - it may ask you if you are sure you want to rewrite the files inside this folder and the answer is yes (sometimes the files in this folder get corrupted so it's best to start with the fresh code)
-- Or do it in the terminal with these commands
+These files should all be downloaded and unzipped then...
+- Move seagrass.gpkg to the main folder (ROB572-Seagrass-Swarm-main)
+- Use your terminal and the following commands to add the other three zip files
 ```bash
 cd tif_files
 
@@ -71,6 +70,10 @@ for f in thirdarcsec_DEM_J1342746*.tif; do
 done
 
 for f in ninearcres_ncei_nintharcsec_dem_J1343192*.tif; do
+    gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 "$f" "reprojected_${f}"
+done
+
+for f in more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825*.tif; do
     gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 "$f" "reprojected_${f}"
 done
 
