@@ -61,8 +61,8 @@ https://drive.google.com/file/d/1QqajA6yp7ny6u4e2nJs9Q8qC0MouCs1O/view?usp=shari
 
 These files should all be downloaded and unzipped then...
 - Move seagrass.gpkg to the main folder (ROB572-Seagrass-Swarm-main)
-- There are two different ways to add the remaining files:
-1. Use your terminal and the following commands to add the other three zip files
+- There are two different ways to add the remaining three zip files:
+1. For MAC: Use your terminal and the following commands to add the three zip files
 ```bash
 cd tif_files
 
@@ -80,7 +80,7 @@ done
 
 cd ..
 ```
-2. Unzip all the files and move only the tiff files in each file into tif_files. (it may say that these files are already there but they have a bad habit of depreciating so move them in any way). Then in your terminal run the following code:
+2. For Windows: Unzip all the files and move only the tiff files in each file into tif_files. (it may say that these files are already there but they have a bad habit of depreciating so move them in any way). Then in your terminal run the following code:
 ```bash
 cd tif_files
 
@@ -95,7 +95,8 @@ Get-ChildItem "ninearcres_ncei_nintharcsec_dem_J1343192*.tif" | ForEach-Object {
 Run Mapping_of_Viable_Sites.py to build environment files needed to run the rest of the code:
 ``` bash
 conda activate rob572_env
-# You might have to manually select and drag the tif files from more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825 into the tif_files or else the viability map will look incomplete!
 python Mapping_of_Viable_Sites.py
 ```
+*** When run this produces the numpy files needed to run the rest of the files and a viability_map.png (which is included in this github). If your viability_map.png doesn't show all the planting sites visible in github file some of the tif_files were not added correctly (most often this occurs with the tif_files in "more_data_on_seagrass_growth_..."). In order to fix this you might have to manually select and drag the tif files from more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825 into the tif_files!
+
 Following this you should be able to navigate into the afsa (Artificial Fish Swarm Algorithm), mpa (Marine Predator Algorithm), and woa (Whale Optimization Algorithm) folders and run the python files contained within. Each file simulates the mission with agents exploring the environment using the titular algorithm with the goal of identifying and mapping seagrass coverage. At the end of each run these files create a png file with the results of the simulated mission.
