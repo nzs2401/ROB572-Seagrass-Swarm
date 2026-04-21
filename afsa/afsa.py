@@ -196,7 +196,7 @@ if __name__ == "__main__":
     start_col = float(np.mean(viable[1])) if len(viable[0]) > 0 else env.cols / 2
 
     # change parameters here to see convergence...
-    afsa = AFSA(env, n_fish=1000, visual=75.0, step=40.0,
+    afsa = AFSA(env, n_fish=1, visual=75.0, step=40.0,
             try_number=4, crowd_factor=0.3, max_iter=200,
             start_row=start_row, start_col=start_col, rng_seed=0)
 

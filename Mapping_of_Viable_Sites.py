@@ -15,7 +15,7 @@ lonq = np.linspace(-86, -80, 600)
 LonGrid, LatGrid = np.meshgrid(lonq,latq)
 print('Grid Made!')
 seagrass_coverage = v_seagrass2.seagrass(LonGrid, LatGrid)
-print('Seagrass Collected!  Now for Depth...').
+print('Seagrass Collected!  Now for Depth...')
 depth = v_depth.depth(LonGrid, LatGrid)
 print('Depth Collected!')
 

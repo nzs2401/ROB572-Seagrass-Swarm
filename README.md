@@ -62,10 +62,27 @@ https://drive.google.com/file/d/1QqajA6yp7ny6u4e2nJs9Q8qC0MouCs1O/view?usp=shari
 These files should all be downloaded and unzipped to the following locations:
 - seagrass.gpkg should go in the main folder (ROB572-Seagrass-Swarm-main)
 - All other files should go into tif_files - it may ask you if you are sure you want to rewrite the files inside this folder and the answer is yes (sometimes the files in this folder get corrupted so it's best to start with the fresh code)
+- Or do it in the terminal with these commands
+```bash
+cd tif_files
+
+for f in thirdarcsec_DEM_J1342746*.tif; do
+    gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 "$f" "reprojected_${f}"
+done
+
+for f in ninearcres_ncei_nintharcsec_dem_J1343192*.tif; do
+    gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 "$f" "reprojected_${f}"
+done
+
+cd ..
+```
 
 #### Code
 Run Mapping_of_Viable_Sites.py to build environment files needed to run the rest of the code:
 ``` bash
+conda create -n rob572_env python=3.10
+conda activate rob572_env
+conda install -c conda-forge geopandas rasterio matplotlib scikit-learn cartopy gdal
 python Mapping_of_Viable_Sites.py
 ```
 Following this you should be able to navigate into the afsa (Artificial Fish Swarm Algorithm), mpa (Marine Predator Algorithm), and woa (Whale Optimization Algorithm) folders and run the python files contained within. Each file simulates the mission with agents exploring the environment using the titular algorithm with the goal of identifying and mapping seagrass coverage. At the end of each run these files create a png file with the results of the simulated mission.
