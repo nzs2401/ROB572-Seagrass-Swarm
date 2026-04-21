@@ -61,7 +61,8 @@ https://drive.google.com/file/d/1QqajA6yp7ny6u4e2nJs9Q8qC0MouCs1O/view?usp=shari
 
 These files should all be downloaded and unzipped then...
 - Move seagrass.gpkg to the main folder (ROB572-Seagrass-Swarm-main)
-- Use your terminal and the following commands to add the other three zip files
+- There are two different ways to add the remaining files:
+1. Use your terminal and the following commands to add the other three zip files
 ```bash
 cd tif_files
 
@@ -79,7 +80,17 @@ done
 
 cd ..
 ```
+2. Unzip all the files and move them into tif_files (it may say that these files are already there but they have a bad habit of depreciating so move them in any way). Then in your terminal run the following code:
+```bash
+cd tif_files
 
+Get-ChildItem "more_data_on_seagrass_growth_usace2022_gulf_coast_dem_J1342825*.tif" | ForEach-Object {gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 $_.FullName ("reprojected_" + $_.Name)}
+
+Get-ChildItem "thirdarcsec_DEM_J1342746*.tif" | ForEach-Object {gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 $_.FullName ("reprojected_" + $_.Name)}
+
+Get-ChildItem "ninearcres_ncei_nintharcsec_dem_J1343192*.tif" | ForEach-Object {gdalwarp -t_srs EPSG:6318 -tr 9.259e-05 9.259e-05 $_.FullName ("reprojected_" + $_.Name)}
+
+```
 #### Code
 Run Mapping_of_Viable_Sites.py to build environment files needed to run the rest of the code:
 ``` bash
