@@ -61,7 +61,7 @@ https://drive.google.com/file/d/1QqajA6yp7ny6u4e2nJs9Q8qC0MouCs1O/view?usp=shari
 
 These files should all be downloaded and unzipped then...
 - Move seagrass.gpkg to the main folder (ROB572-Seagrass-Swarm-main)
-- There are two different ways to add the remaining three zip files:
+- Add the remaining three zip files in one of the following ways depending on your computer system:
 1. For MAC: Use your terminal and the following commands to add the three zip files
 ```bash
 cd tif_files
