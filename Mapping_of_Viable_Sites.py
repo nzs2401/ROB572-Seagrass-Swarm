@@ -1,7 +1,6 @@
 #Mapping of Viable Sites
 import numpy as np
 import v_seagrass2
-import v_coral
 import v_depth
 import random
 import matplotlib.pyplot as plt
@@ -16,20 +15,17 @@ lonq = np.linspace(-86, -80, 600)
 LonGrid, LatGrid = np.meshgrid(lonq,latq)
 print('Grid Made!')
 seagrass_coverage = v_seagrass2.seagrass(LonGrid, LatGrid)
-print('Seagrass Collected!  Now for Coral...')
-coral_presence = v_coral.coral(LonGrid, LatGrid)
-print('Depth & Coral Presence Collected')
-# add depth...
+print('Seagrass Collected!  Now for Depth...').
 depth = v_depth.depth(LonGrid, LatGrid)
+print('Depth Collected!')
 
 percover = np.zeros_like(depth)
 good_depth = (depth > 1) & (depth < 3)
 
 
-# DEBUG - add these lines
+# DEBUG
 print('Cells with good depth:', np.sum(good_depth))
 print('Unique seagrass values at good depth cells:')
-#print(np.unique(seagrass_coverage[good_depth])) #THIS WILL CAUSE PROBLEMS!
 
 # Assign viability scores based on seagrass coverage and depth
 
